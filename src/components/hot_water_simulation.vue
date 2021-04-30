@@ -3,6 +3,9 @@
     <el-col>
       <el-button type="info" @click="toURL1" style="float: left">返回</el-button>
     </el-col>
+    <el-col>
+      <p style="float: left">盒子编号：{{box_number}}</p>
+    </el-col>
   </el-row>
   <el-tabs v-model="activeName" @tab-click="handleClick">
     <el-tab-pane label="plc数据" name="first">
@@ -88,52 +91,52 @@
       </el-form>
     </el-tab-pane>
     <el-tab-pane label="告警数据" name="third">
-      <el-form :model="alarm" :rules="rules" ref="alarm" label-width="100px" class="demo-ruleForm">
-        <el-form-item label="锅炉运行状态" prop="alarm1">
-          <el-radio v-model="alarm.alarm2" label='0'>锅炉停止</el-radio>
-          <el-radio v-model="alarm.alarm2" label='1'>锅炉小火</el-radio>
-          <el-radio v-model="alarm.alarm2" label='2'>锅炉大火</el-radio>
+      <el-form :model="alarm"   label-width="100px" class="demo-ruleForm">
+        <el-form-item label="锅炉运行状态" >
+          <el-radio v-model="alarm.alarm1" label='0'>锅炉停止</el-radio>
+          <el-radio v-model="alarm.alarm1" label='1'>锅炉小火</el-radio>
+          <el-radio v-model="alarm.alarm1" label='2'>锅炉大火</el-radio>
         </el-form-item>
-        <el-form-item label="水位状态" prop="alarm2">
+        <el-form-item label="水位状态" >
           <el-radio v-model="alarm.alarm2" label="0">水位极低</el-radio>
           <el-radio v-model="alarm.alarm2" label="1">水位低</el-radio>
           <el-radio v-model="alarm.alarm2" label="2">水位正常</el-radio>
           <el-radio v-model="alarm.alarm2" label="3">水位高</el-radio>
           <el-radio v-model="alarm.alarm2" label="4">水位极高</el-radio>
         </el-form-item>
-        <el-form-item label="压力状态" prop="alarm3">
+        <el-form-item label="压力状态" >
           <el-radio v-model="alarm.alarm3" label="0">压力低</el-radio>
           <el-radio v-model="alarm.alarm3" label="1">压力正常</el-radio>
           <el-radio v-model="alarm.alarm3" label="2">压力高</el-radio>
           <el-radio v-model="alarm.alarm3" label="3">压力极高</el-radio>
         </el-form-item>
-        <el-form-item label="补水泵个数" prop="alarm4">
+        <el-form-item label="补水泵个数" >
           <el-radio v-model="alarm.alarm4" label="0">单补水泵</el-radio>
           <el-radio v-model="alarm.alarm4" label="1">双补水泵</el-radio>
         </el-form-item>
-        <el-form-item label="一号补水泵" prop="alarm5">
+        <el-form-item label="一号补水泵" >
           <el-radio v-model="alarm.alarm5" label="0">一号补水泵停止</el-radio>
           <el-radio v-model="alarm.alarm5" label="1">一号补水泵运行</el-radio>
         </el-form-item>
-        <el-form-item label="二号补水泵" prop="alarm5">
+        <el-form-item label="二号补水泵">
           <el-radio v-model="alarm.alarm6" label="0">二号补水泵停止</el-radio>
           <el-radio v-model="alarm.alarm6" label="1">二号补水泵运行</el-radio>
         </el-form-item>
-        <el-form-item label="循环泵" prop="alarm5">
+        <el-form-item label="循环泵" >
           <el-radio v-model="alarm.alarm7" label="0">有循环泵</el-radio>
           <el-radio v-model="alarm.alarm7" label="1">无循环泵</el-radio>
         </el-form-item>
-        <el-form-item label="循环泵状态" prop="alarm5">
+        <el-form-item label="循环泵状态" >
           <el-radio v-model="alarm.alarm8" label="0">循环泵停止</el-radio>
           <el-radio v-model="alarm.alarm8" label="1">循环泵运行</el-radio>
         </el-form-item>
-        <el-form-item label="锅炉故障" prop="alarm5">
-          <el-checkbox-group v-model=checkList>
+        <el-form-item label="锅炉故障" >
+          <el-checkbox-group v-model=alarm.checkList>
             <el-checkbox label='1'>定时关机</el-checkbox>
             <el-checkbox label=2>蒸汽压力传感器断线</el-checkbox>
             <el-checkbox label=3>节能器出水温度传感器故障</el-checkbox>
-            <el-checkbox label=4>定时关机</el-checkbox>
-            <el-checkbox label=5>蒸汽压力传感器断线</el-checkbox>
+            <el-checkbox label=4>冷凝出口烟温传感器故障</el-checkbox>
+            <el-checkbox label=5>节能器出口烟温传感器故障</el-checkbox>
             <el-checkbox label=6>节能器出水温度传感器故障</el-checkbox>
             <el-checkbox label=7>冷凝器出水温度传感器故障</el-checkbox>
             <el-checkbox label=9>燃烧机故障</el-checkbox>
@@ -146,7 +149,7 @@
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="submitalarm">立即上报</el-button>
-          <el-button @click="resetForm('ruleForm')">重置</el-button>
+          <el-button @click="resetForm('alarm')">重置</el-button>
         </el-form-item>
       </el-form>
     </el-tab-pane>
@@ -167,7 +170,6 @@ export default {
   },
   data() {
     return {
-      checkList: ['1'],
       params: {
         type: '(1,2,3)'
       },
@@ -213,6 +215,7 @@ export default {
         alarm7: '1',
         alarm8: '1',
         alarm10: '1',
+        checkList: ['1']
       },
       power_rules: {
         power1: [{required: true, message: '必填'}],
@@ -235,13 +238,13 @@ export default {
       });
     },
     submitalarm() {
-      window.console.log(this.checkList)
-      window.console.log(this.checkList.map(Number))
+      window.console.log(this.alarm.checkList)
+      window.console.log(this.alarm.checkList.map(Number))
       const sub_alarm_body = {
         ident: Number(this.thread_ident),
         type: 'plc_state',
         value: [[Number(this.alarm.alarm1), Number(this.alarm.alarm2), Number(this.alarm.alarm3), Number(this.alarm.alarm4),
-          Number(this.alarm.alarm5), Number(this.alarm.alarm6), Number(this.alarm.alarm7), Number(this.alarm.alarm8)], this.checkList.map(Number)]
+          Number(this.alarm.alarm5), Number(this.alarm.alarm6), Number(this.alarm.alarm7), Number(this.alarm.alarm8)], this.alarm.checkList.map(Number)]
       }
       simulation(sub_alarm_body)
           .then(res => {
@@ -283,7 +286,7 @@ export default {
           const sub_power_body = {
             ident: Number(this.thread_ident),
             type: 'ele_data',
-            value: [[Number(this.powerForm.power1) * 10, Number(this.powerForm.power2) * 10, Number(this.powerForm.power3) * 1000, Number(this.powerForm.power4) * 10,
+            value: [[Number(this.powerForm.power1) * 10, Number(this.powerForm.power2) * 10, Number(this.powerForm.power3) * 10, Number(this.powerForm.power4) * 10,
               Number(this.powerForm.power5) * 10, Number(this.powerForm.power6) * 10, Number(this.powerForm.power7) * 100, Number(this.powerForm.power8) * 10], Number(this.powerForm.power9) * 10]
           }
           simulation(sub_power_body)

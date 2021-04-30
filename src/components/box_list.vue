@@ -14,6 +14,15 @@
         width="180">
     </el-table-column>
     <el-table-column
+        prop="box_type"
+        label="盒子类型"
+        width="180">
+      <template v-slot="scope">
+        <span v-if="scope.row.box_type === 1">热水锅炉</span>
+        <span v-if="scope.row.box_type === 2">蒸汽锅炉</span>
+      </template>
+    </el-table-column>
+    <el-table-column
         prop="box_count"
         label="盒子数量">
     </el-table-column>
@@ -24,15 +33,19 @@
     <el-table-column
         prop="runnning_type"
         label="当前模拟状态">
+      <template v-slot="scope">
+        <span v-if="scope.row.runnning_type === 1">正常</span>
+        <span v-if="scope.row.runnning_type === 2">停止</span>
+      </template>
     </el-table-column>
     <el-table-column
         fixed="right"
         label="操作"
     >
       <template #default="scope">
-<!--        <el-button @click="handleClick(scope.row)" type="primary" size="small">查看</el-button>-->
+        <!--        <el-button @click="handleClick(scope.row)" type="primary" size="small">查看</el-button>-->
         <el-button @click="toURL((scope.row))" type="primary" size="small">查看</el-button>
-        <el-button type="danger" size="small" @click="handlestop(scope.$index,scope.row)">停止模拟</el-button>
+        <el-button type="danger" size="small" @click="handlestop(scope.row)">停止模拟</el-button>
       </template>
     </el-table-column>
   </el-table>
@@ -42,8 +55,8 @@
 <script>
 /* eslint-disable */
 import axios from "axios";
-import { ElMessage } from 'element-plus'
-import {get_simulationlist,simulation_stopBox} from "../api";
+import {ElMessage} from 'element-plus'
+import {get_simulationlist, simulation_stopBox} from "../api";
 
 export default {
   created() {
@@ -60,19 +73,21 @@ export default {
     open5(msg) {
       ElMessage.error(msg);
     },
-    toURL(row){
+    toURL(row) {
       window.console.log(row)
-      this.$router.push({ name: 'test3', params: { box_number: row.box_number,thread_ident:row.thread_ident }})
+      this.$router.push({name: 'test3', params: {box_number: row.box_number, thread_ident: row.thread_ident}})
     },
-    handlestop(index, row) {
+    handlestop(row) {
       var that = this;
       const stop_body2 = {ident: ''}
       stop_body2.ident = row.thread_ident.toString()
       simulation_stopBox(stop_body2)
-              .then(res => {
-                that.get_tableData()
-              });
-    },
+          .then(res => {
+            console.log(res)
+            ElMessage.success('停止成功')
+          });
+      setTimeout(that.get_tableData,1000);
+      },
     get_tableData() {
       // var that = this;
       get_simulationlist(this.body1)
@@ -85,10 +100,11 @@ export default {
   data() {
     return {
       tableData: [],
-      id1:'',
+      id1: '',
       body1: {
         type: '(1,2,3)'
-      }
+      },
+      box_type_arr:{1:"热水锅炉",2:"蒸汽锅炉"}
 
     }
   }
