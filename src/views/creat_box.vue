@@ -56,7 +56,7 @@ export default {
                 window.console.log(res.status)
                 if (res.status === 200){
                   console.log(res);
-                  ElMessage.success(res.data.status);}
+                  ElMessage.success(res.data.state);}
               });
         } else {
           console.log('error submit!!');
