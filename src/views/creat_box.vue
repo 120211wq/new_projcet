@@ -34,7 +34,7 @@ export default {
   data() {
     return {
       AuthoCheck: 1,
-      authTypeList: [{id:1,value:'热水锅炉',type:1},{id:2,value:'蒸汽锅炉',type:2}],
+      authTypeList: [{id:1,value:'蒸汽锅炉',type:1},{id:2,value:'热水锅炉',type:2}],
       radio1:'TEST',
       formInline: {
         box_num: '',
@@ -53,7 +53,10 @@ export default {
           var that = this;
           submit_createBox(that.formInline)
               .then(res => {
-                ElMessage.success(res.data.status);
+                window.console.log(res.status)
+                if (res.status === 200){
+                  console.log(res);
+                  ElMessage.success(res.data.status);}
               });
         } else {
           console.log('error submit!!');

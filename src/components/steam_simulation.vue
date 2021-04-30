@@ -1,10 +1,10 @@
 <template>
   <el-row>
+    <el-page-header @back="toURL1" content="详情页面">
+    </el-page-header>
     <el-col>
-      <el-button type="info" @click="toURL1" style="float: left">返回</el-button>
-    </el-col>
-    <el-col>
-      <p style="float: left">盒子编号：{{box_number}}</p>
+      <p style="text-align: left">盒子编号：{{box_number}}</p>
+      <p style="text-align:left ">盒子类型：{{ box_type_list1[box_type] }}</p>
     </el-col>
   </el-row>
   <el-tabs v-model="activeName" @tab-click="handleClick">
@@ -41,7 +41,15 @@
                     replace('$#$', '.').replace(/^(\-)*(\d+)\.(\d).*$/, '$1$2.$3').replace(/^\./g, '')"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="submitplc('plcForm')">立即创建</el-button>
+          <el-switch
+              @change="continuous_plc1"
+              v-model="plc_switch"
+              inactive-text="持续上报"
+              active-color="#13ce66"
+              inactive-color="#ff4949"
+              style="float: left">
+          </el-switch>
+          <el-button type="primary" @click="submitplc('plcForm')">立即上报</el-button>
           <el-button @click="resetForm('plcForm')">重置</el-button>
         </el-form-item>
       </el-form>
@@ -85,7 +93,15 @@
                     replace('$#$', '.').replace(/^(\-)*(\d+)\.(\d).*$/, '$1$2.$3').replace(/^\./g, '')"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="submitpower('powerForm')">立即创建</el-button>
+          <el-switch
+              @change="continuous_power1"
+              v-model="power_switch"
+              inactive-text="持续上报"
+              active-color="#13ce66"
+              inactive-color="#ff4949"
+              style="float: left">
+          </el-switch>
+          <el-button type="primary" @click="submitpower('powerForm')">立即上报</el-button>
           <el-button @click="resetForm('powerForm')">重置</el-button>
         </el-form-item>
       </el-form>
@@ -149,7 +165,6 @@
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="submitalarm">立即上报</el-button>
-          <el-button @click="resetForm('alarm')">重置</el-button>
         </el-form-item>
       </el-form>
     </el-tab-pane>
@@ -161,7 +176,7 @@
 
 import axios from "axios";
 import {ElMessage} from 'element-plus'
-import {simulation} from '../api/index'
+import {simulation, start_continuous, stop_continuous} from '../api/index'
 
 /* eslint-disable */
 export default {
@@ -170,6 +185,12 @@ export default {
   },
   data() {
     return {
+      box_type_list1:{
+        1:'蒸汽锅炉',
+        2:'热水锅炉'
+      },
+      power_switch:false,
+      plc_switch:false,
       params: {
         type: '(1,2,3)'
       },
@@ -178,7 +199,7 @@ export default {
           {
             plc1: 90,
             plc2: 82,
-            plc3: 0.5,
+            plc3: 50,
             plc4: 24,
             plc5: 56,
             plc6: 122,
@@ -231,20 +252,71 @@ export default {
     };
   },
   methods: {
-    open7(msg) {
-      ElMessage.success({
-        message: msg,
-        type: 'success'
-      });
+    continuous_power1() {
+      if (this.power_switch === true) {
+        const continuous_power_body = {
+          ident: Number(this.thread_ident),
+          type: 'ele_data',
+          value: [[Number(this.powerForm.power1) * 10, Number(this.powerForm.power2) * 10, Number(this.powerForm.power3) * 10, Number(this.powerForm.power4) * 10,
+            Number(this.powerForm.power5) * 10, Number(this.powerForm.power6) * 10, Number(this.powerForm.power7) * 100, Number(this.powerForm.power8) * 10], Number(this.powerForm.power9) * 10]
+          ,
+          flag: 2
+        }
+        start_continuous(continuous_power_body)
+            .then(res => {
+              if(res.status === 200){
+              ElMessage.success('开启电量持续上报')
+              this.ele_con_ident = res.data.ident[0][0];
+              }
+            });
+      } else {
+        window.console.log('我关闭持续上报啦');
+        const stop_continuous_body = {box_id: this.box_number, stop_ident: this.ele_con_ident, type: 'ele_data'}
+        stop_continuous(stop_continuous_body).then(res => {
+          if(res.status === 200){
+            ElMessage.success('停止持续上报成功')
+            this.power_switch = false
+          }
+        });
+      }
+    },
+    continuous_plc1() {
+      if (this.plc_switch === true) {
+        const continuous_plc1_body = {
+          ident: Number(this.thread_ident),
+          type: 'plc_data',
+          value: [Number(this.plcForm.plc1) * 10, Number(this.plcForm.plc2) * 10, Number(this.plcForm.plc3) * 10, Number(this.plcForm.plc4) * 10,
+            Number(this.plcForm.plc5) * 10, Number(this.plcForm.plc6) * 10, Number(this.plcForm.plc7) * 10]
+          ,flag: 2
+        }
+        start_continuous(continuous_plc1_body)
+            .then(res => {
+              if(res.status === 200){
+                ElMessage.success('开启plc持续上报')
+                this.plc_con_ident = res.data.ident[0][0];
+              }
+              
+            });
+      } else {
+        window.console.log('我关闭持续上报啦');
+        const stop_continuous_body = {box_id: this.box_number, stop_ident: this.plc_con_ident, type: 'plc_data'}
+        stop_continuous(stop_continuous_body).then(res => {
+          if(res.status === 200){
+            ElMessage.success('停止持续上报成功')
+            this.plc_switch = false
+          }
+        });
+      }
     },
     submitalarm() {
-      window.console.log(this.alarm.checkList)
-      window.console.log(this.alarm.checkList.map(Number))
       const sub_alarm_body = {
         ident: Number(this.thread_ident),
         type: 'plc_state',
         value: [[Number(this.alarm.alarm1), Number(this.alarm.alarm2), Number(this.alarm.alarm3), Number(this.alarm.alarm4),
           Number(this.alarm.alarm5), Number(this.alarm.alarm6), Number(this.alarm.alarm7), Number(this.alarm.alarm8)], this.alarm.checkList.map(Number)]
+      ,
+        flag: 1
+
       }
       simulation(sub_alarm_body)
           .then(res => {
@@ -255,7 +327,7 @@ export default {
       ElMessage.error(msg);
     },
     toURL1() {
-      this.$router.push({name: 'test2'})
+      this.$router.push({name: 'box_list'})
     },
     handleClick(tab, event) {
       console.log(tab, event);
@@ -268,6 +340,7 @@ export default {
             type: 'plc_data',
             value: [Number(this.plcForm.plc1) * 10, Number(this.plcForm.plc2) * 10, Number(this.plcForm.plc3) * 10, Number(this.plcForm.plc4) * 10,
               Number(this.plcForm.plc5) * 10, Number(this.plcForm.plc6) * 10, Number(this.plcForm.plc7) * 10]
+            ,flag: 1
           }
           simulation(sub_plc_body)
               .then(res => {
@@ -282,12 +355,13 @@ export default {
     submitpower(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          window.console.log()
           const sub_power_body = {
             ident: Number(this.thread_ident),
             type: 'ele_data',
             value: [[Number(this.powerForm.power1) * 10, Number(this.powerForm.power2) * 10, Number(this.powerForm.power3) * 10, Number(this.powerForm.power4) * 10,
               Number(this.powerForm.power5) * 10, Number(this.powerForm.power6) * 10, Number(this.powerForm.power7) * 100, Number(this.powerForm.power8) * 10], Number(this.powerForm.power9) * 10]
+            ,
+            flag: 1
           }
           simulation(sub_power_body)
               .then(res => {
@@ -307,6 +381,15 @@ export default {
     var _this = this
     _this.box_number = this.$route.params.box_number
     _this.thread_ident = this.$route.params.thread_ident
+    _this.ele_con_ident = this.$route.params.ele_con_ident
+    _this.plc_con_ident = this.$route.params.plc_con_ident
+    _this.box_type = this.$route.params.box_type
+    if(_this.ele_con_ident !== 'null'){
+      _this.power_switch = true
+    }
+    if(_this.plc_con_ident !== 'null'){
+      _this.plc_switch = true
+    }
   }
 }
 

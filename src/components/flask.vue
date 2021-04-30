@@ -96,7 +96,7 @@
 <!--<script>-->
 <!--/* eslint-disable */-->
 <!--import axios from "axios";-->
-<!--import test1 from './test1.vue'-->
+<!--import test1 from './creat_box.vue'-->
 
 <!--export default {-->
 <!--  components: {test1},-->

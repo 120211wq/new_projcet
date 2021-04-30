@@ -2,13 +2,14 @@ import {createRouter, createWebHistory} from 'vue-router'
 
 const home_page = () => import("../views/home_page.vue")
 const login = () => import("../views/login.vue")
-const test1 = () => import("../views/test1.vue")
-const test2 = () => import("../components/test2.vue")
-const test3 = () => import("../components/test3.vue")
+const creat_box = () => import("../views/creat_box.vue")
+const box_list = () => import("../components/box_list.vue")
+const steam_simulation = () => import("../components/steam_simulation.vue")
+const hot_water_simulation = () => import("../components/hot_water_simulation.vue")
 
 
 
-// import HelloWorld from '../components/test1.vue'
+// import HelloWorld from '../components/creat_box.vue'
 
 const routerHistory = createWebHistory()
 
@@ -24,20 +25,26 @@ const router = createRouter({
         {
             path: '/home_page',
             component: home_page,
+            name : 'home_page',
             children: [
                 {
-                    path: "test1",
-                    component: test1
+                    path: "creat_box",
+                    component: creat_box
                 },
                 {
-                    name:'test2',
-                    path: "test2",
-                    component: test2,
+                    name:'box_list',
+                    path: "box_list",
+                    component: box_list,
                 },
                 {
-                    name:'test3',
-                    path: "/home_page/test2",
-                    component: test3
+                    name:'steam_simulation',
+                    path: "/home_page/box_list",
+                    component: steam_simulation
+                },
+                {
+                    name:'hot_water_simulation',
+                    path: "/home_page/box_list",
+                    component: hot_water_simulation
                 }
 
             ]

@@ -4,7 +4,7 @@ import { ElMessage } from 'element-plus'
 let apiUrl = "/api"
 if (process.env.NODE_ENV === "development") { //开发环境
     console.log("当前环境：测试环境环境");
-    apiUrl = "http://192.168.0.26:5100"
+    apiUrl = "http://192.168.0.23:5200"
 } else if (process.env.NODE_ENV === "production") {
     console.log("当前环境：生产环境");
     apiUrl = "http://192.168.0.26:5100"  //接口地址
@@ -21,29 +21,29 @@ const service = axios.create({
 
 
 
-// 添加请求拦截器
-// service.interceptors.request.use(
-//     config => {
-//         // 发送请求之前
-//         // 为头部增加token
-//         config.headers['token'] = localStorage.getItem('token') || ""
-//         // 为头部增加accId
-//         config.headers['accId'] = localStorage.getItem("accid") || ""
-//
-//         return config
-//     },
-//     error => {
-//         // 请求错误
-//         ElMessage.error("请求错误")
-//         return error
-//     }
-// )
+//添加请求拦截器
+service.interceptors.request.use(
+    config => {
+        // 发送请求之前
+        // 为头部增加token
+        config.headers['token'] = localStorage.getItem('token') || ""
+        // 为头部增加accId
+        // config.headers['accId'] = localStorage.getItem("accid") || ""
+
+        return config
+    }
+)
 
 // 添加响应拦截器
+
+export function push() {
+    window.location.href = '/'
+}
 service.interceptors.response.use(response => {
     //接收到响应数据并成功后的一些共有的处理，关闭loading等
-    // ElMessage.success('成功')
+    // ElMessage.success(response.data.state.toString())
     return response
+    
 }, error => {
     /***** 接收到异常响应的处理开始 *****/
     if (error && error.response) {
@@ -51,7 +51,7 @@ service.interceptors.response.use(response => {
         // 2.根据响应码具体处理
         switch (error.response.status) {
             case 400:
-                error.message = '错误请求'
+                error.message = error.response.data.state.toString()
                 break;
             case 401:
                 error.message = '未授权，请重新登录'
@@ -76,7 +76,8 @@ service.interceptors.response.use(response => {
                 error.message = '网络未实现'
                 break;
             case 502:
-                error.message = '网络错误'
+                error.message = 'token验证失败'
+                setTimeout(push,2000);
                 break;
             case 503:
                 error.message = '服务不可用'

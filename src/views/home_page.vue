@@ -6,8 +6,8 @@
           <el-submenu index="1">
             <template #title><i class="el-icon-message"></i>奇享盒模拟</template>
             <el-menu-item-group>
-              <el-menu-item index="/home_page/test1">单个盒子模拟</el-menu-item>
-              <el-menu-item index="/home_page/test2">盒子模拟列表</el-menu-item>
+              <el-menu-item index="/home_page/creat_box">单个盒子模拟</el-menu-item>
+              <el-menu-item index="/home_page/box_list">盒子模拟列表</el-menu-item>
             </el-menu-item-group>
             <el-submenu index="1-4">
               <template #title>选项4</template>
@@ -52,9 +52,7 @@
             <i class="el-icon-setting" style="margin-right: 15px"></i>
             <template #dropdown>
               <el-dropdown-menu>
-                <el-dropdown-item>查看</el-dropdown-item>
-                <el-dropdown-item>新增</el-dropdown-item>
-                <el-dropdown-item>删除</el-dropdown-item>
+                <el-dropdown-item  @click="quit">退出登录</el-dropdown-item>
               </el-dropdown-menu>
             </template>
           </el-dropdown>
@@ -71,7 +69,22 @@
 
 <script>
 export default {
-  methods: {},
+  methods: {
+     quit() {
+        this.$confirm('吃否确认退出', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.$message({
+            type: 'success',
+            message: '退出成功!'
+          });
+          this.$router.push({name: 'login'})
+          localStorage['token'] = ''
+        })
+      }
+  },
   data() {
     return {}
   },
@@ -82,7 +95,8 @@ export default {
     defaultActive() {
       return '/' + this.$route.path.split('/').reverse()[0];
     }
-}
+  },
+ 
 };
 </script>
 

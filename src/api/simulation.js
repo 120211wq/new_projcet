@@ -18,23 +18,19 @@ export function get_box(data) {
 }
 
 export function submit_createBox(data) {
-     request({
+    return request({
         url: '/createBox',
         method: 'post',
         data: data
     })
-    ElMessage.success('成功')
-    return request
 }
 
 export function simulation_stopBox(data) {
-    request({
+    return request({
         url: '/stopBox',
         method: 'post',
         data: data
     })
-    ElMessage.success('停止成功')
-    return request
 }
 
 export function get_simulationlist(data) {
@@ -43,4 +39,30 @@ export function get_simulationlist(data) {
         method: 'post',
         data: data
     })
+}
+
+export function stop_continuous(data) {
+    return  request({
+        url: '/stopContinue',
+        method: 'post',
+        data: data
+    })
+}
+
+export function start_continuous(data) {
+    return  request({
+        url: '/uploadData',
+        method: 'post',
+        data: data
+    })
+
+}
+
+export function do_login(data) {
+    return  request({
+        url: '/login',
+        method: 'post',
+        data: data
+    })
+
 }
