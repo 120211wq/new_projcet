@@ -4,7 +4,7 @@ import { ElMessage } from 'element-plus'
 let apiUrl = "/api"
 if (process.env.NODE_ENV === "development") { //开发环境
     console.log("当前环境：测试环境环境");
-    apiUrl = "http://192.168.0.23:5200"
+    apiUrl = "http://192.168.0.39:5200"
 } else if (process.env.NODE_ENV === "production") {
     console.log("当前环境：生产环境");
     apiUrl = "http://192.168.0.26:5100"  //接口地址

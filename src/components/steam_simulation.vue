@@ -168,18 +168,28 @@
         </el-form-item>
       </el-form>
     </el-tab-pane>
+    <el-tab-pane label="Echarts" name="Echarts">
+    <echart1
+      ></echart1>
+    </el-tab-pane>
+
   </el-tabs>
 </template>
 
 <script>
+
 /* eslint-disable */
 
 import axios from "axios";
 import {ElMessage} from 'element-plus'
 import {simulation, start_continuous, stop_continuous} from '../api/index'
+import echart from "@/echart/echart";
 
 /* eslint-disable */
 export default {
+  components:{
+    "echart1":echart
+  },
   mounted() {
 
   },
